@@ -22,8 +22,19 @@ class Hash
   # This returns 0 because rspec will break if it returns nil
   # Make sure to implement an actual Hash#hash method
   def hash
+    h = 0
+    self.sort_by { |k, v| k }.each do |k,v|
+      if k.is_a?(Symbol)
+        k = k.to_s.to_i(36)
+      end
 
-    
-    0
+      if v.is_a?(String)
+        v = v.to_i(36)
+      end
+
+      h += (h + k + v).hash
+    end
+    # 0
+    h
   end
 end
