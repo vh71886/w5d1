@@ -22,6 +22,8 @@ end
 
 class LinkedList
   include Enumerable
+  attr_reader :head, :tail
+
   def initialize
     @head = Node.new
     @tail = Node.new
@@ -35,11 +37,11 @@ class LinkedList
   end
 
   def first
-    @head.next
+    self.head.next
   end
 
   def last
-    @tail.prev
+    self.tail.prev
   end
 
   def empty?
@@ -47,14 +49,12 @@ class LinkedList
   end
 
   def get(key)
-
+    self.each { |node| return node.val if node.key == key }
   end
 
   def include?(key)
     node = first
-    # until node.next == nil
-    #   return true if node.key == key
-    # end
+    self.each { |node| return true if node.key == key }
     false
   end
 
@@ -69,19 +69,27 @@ class LinkedList
   end
 
   def update(key, val)
-
+    self.each { |node| node.val = val if node.key == key}
   end
 
   def remove(key)
+    target = @head
+    self.each { |node| target = node if node.key == key }
 
+    target.prev.next = target.next
+    target.next.prev = target.prev
   end
 
   def each
-
+    node = self.head.next
+    until node == self.tail
+      yield node
+      node = node.next
+    end
   end
 
   # uncomment when you have `each` working and `Enumerable` included
-  # def to_s
-  #   inject([]) { |acc, link| acc << "[#{link.key}, #{link.val}]" }.join(", ")
-  # end
+  def to_s
+    inject([]) { |acc, link| acc << "[#{link.key}, #{link.val}]" }.join(", ")
+  end
 end
