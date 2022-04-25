@@ -49,9 +49,7 @@ class IntSet
   end
 
   private
-
   def [](num)
-    # optional but useful; return the bucket corresponding to `num`
     # usage: self[num] == @store[num % num_buckets]
     @store[num % num_buckets]
   end
@@ -70,18 +68,31 @@ class ResizingIntSet
   end
 
   def insert(num)
+    if count > num_buckets - 1
+      resize!
+    end
+
+    if !include?(num)
+      self[num] << num 
+      @count += 1
+    end
   end
 
   def remove(num)
+    return if !include?(num)
+    self[num].delete(num)
+    @count -= 1
   end
 
   def include?(num)
+    self[num].each { |n| return true if n == num }
+    false
   end
 
   private
 
   def [](num)
-    # optional but useful; return the bucket corresponding to `num`
+    @store[num % num_buckets]
   end
 
   def num_buckets
@@ -89,5 +100,14 @@ class ResizingIntSet
   end
 
   def resize!
+    old_store = @store
+    @store = Array.new(@store.length * 2) { Array.new }
+    @count = 0
+
+    old_store.each do |bucket|
+      bucket.each do |num|
+        insert(num)
+      end
+    end
   end
 end
